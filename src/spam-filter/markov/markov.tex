@@ -1,0 +1,105 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\title{Análisis del Filtro de Spam usando Modelos de Markov}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introducción}
+El enfoque para implementar un filtro de spam con un modelo de Markov se basa en analizar las \textbf{transiciones de palabras} dentro de los mensajes, en lugar de simplemente contar ocurrencias independientes como en el modelo de \textbf{Naive Bayes}. Esto permite capturar el contexto entre palabras, algo fundamental en el procesamiento del lenguaje natural.
+
+\section{Modelo de Markov}
+Un \textbf{Modelo de Markov} de primer orden asume que la probabilidad de que una palabra aparezca depende únicamente de la palabra que la precede, sin importar el resto del contexto previo. Esto se expresa matemáticamente como:
+
+\begin{equation}
+P(w_n | w_{n-1}, C) = \frac{P(w_{n-1}, w_n, C)}{P(w_{n-1}, C)}
+\end{equation}
+
+donde:
+\begin{itemize}
+    \item $w_n$ es la palabra actual,
+    \item $w_{n-1}$ es la palabra anterior,
+    \item $C$ es la clase del mensaje (Spam o Ham).
+\end{itemize}
+
+\section{Matrices de Transición}
+Los siguientes son los resultados de las matrices de transición para los mensajes de entrenamiento:
+
+\subsection{Matriz de Transición para Spam}
+\begin{equation}
+\begin{array}{|c|c|c|c|c|}
+\hline
+ & \text{Gana} & \text{dinero} & \text{Reclama} & \text{tu} \\
+\hline
+\text{Gana} & 0 & 0.167 & 0 & 0 \\
+\text{dinero} & 0 & 0 & 0 & 0.167 \\
+\text{Reclama} & 0 & 0 & 0 & 0.167 \\
+\text{tu} & 0 & 0.167 & 0 & 0 \\
+\hline
+\end{array}
+\end{equation}
+
+\subsection{Matriz de Transición para Ham}
+\begin{equation}
+\begin{array}{|c|c|c|c|c|c|c|}
+\hline
+ & \text{Reunión} & \text{a} & \text{las} & \text{3PM} & \text{Actualización} & \text{del} \\
+\hline
+\text{Reunión} & 0 & 0.133 & 0 & 0 & 0 & 0 \\
+\text{a} & 0 & 0 & 0.133 & 0 & 0 & 0 \\
+\text{las} & 0 & 0 & 0 & 0.133 & 0 & 0 \\
+\text{Actualización} & 0 & 0 & 0 & 0 & 0 & 0.133 \\
+\text{del} & 0 & 0 & 0 & 0 & 0 & 0.133 \\
+\text{proyecto} & 0 & 0 & 0 & 0 & 0 & 0.133 \\
+\hline
+\end{array}
+\end{equation}
+
+\section{Cálculo de las Probabilidades de Transición}
+Aplicando \textbf{suavizado de Laplace} para evitar probabilidades cero:
+
+\begin{equation}
+P(\text{siguiente palabra} | \text{palabra actual}, C) = \frac{\text{conteo del par} + 1}{\text{conteo total de la palabra actual} + \text{tamaño del vocabulario}}
+\end{equation}
+
+\section{Cálculo para el Mensaje de Prueba}
+Para el mensaje \textbf{"Reclama tu dinero premio"}:
+
+\begin{align*}
+P(\text{Spam} | \text{Mensaje}) &= P(\text{Reclama}|\text{Spam}) \cdot P(\text{tu}|\text{Reclama},\text{Spam}) \cdot P(\text{dinero}|\text{tu},\text{Spam}) \cdot P(\text{premio}|\text{dinero},\text{Spam}) \\
+&= 0.167 \cdot 0.167 \cdot 0.167 \cdot 0.167 \\
+&= 0.000078
+\end{align*}
+
+\begin{align*}
+P(\text{Ham} | \text{Mensaje}) &= P(\text{Reclama}|\text{Ham}) \cdot P(\text{tu}|\text{Reclama},\text{Ham}) \cdot P(\text{dinero}|\text{tu},\text{Ham}) \cdot P(\text{premio}|\text{dinero},\text{Ham}) \\
+&= \frac{1}{15} \cdot \frac{1}{15} \cdot \frac{1}{15} \cdot \frac{1}{15} \\
+&= 0.00003
+\end{align*}
+
+\section{Decisión Final}
+Comparando las dos probabilidades:
+
+\begin{equation}
+0.000078 > 0.00003
+\end{equation}
+
+El mensaje se clasifica como \textbf{Spam}.
+
+\section{Ventajas del Enfoque de Markov sobre Naive Bayes}
+\begin{itemize}
+    \item \textbf{Considera el Contexto}: Incluye dependencias entre palabras.
+    \item \textbf{Más Realista para Lenguaje Natural}: Captura la estructura del lenguaje mejor que un enfoque totalmente independiente.
+\end{itemize}
+
+\end{document}

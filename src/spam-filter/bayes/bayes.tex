@@ -1,0 +1,101 @@
+% !TEX root = C:\Users\rober\OneDrive - Universidad de Las Américas\Udla\Inteligencia Artificial\Sistemas Inteligentes\POC\spam-filter\src\bayes\bayes.tex
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\title{Demostración Matemática para un Filtro de Spam en Español (Naive Bayes)}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Conjunto de Datos de Entrenamiento}
+Mensajes de Spam:
+\begin{itemize}
+    \item Gana dinero rápido
+    \item Reclama tu premio
+\end{itemize}
+Mensajes de Ham:
+\begin{itemize}
+    \item Reunión a las 3PM
+    \item Actualización del proyecto necesaria
+\end{itemize}
+
+Mensaje de prueba: \textbf{Reclama tu dinero premio}
+
+\section{Construir el Vocabulario}
+El vocabulario es el conjunto de todas las palabras únicas en los mensajes:
+\begin{itemize}
+    \item gana, dinero, rápido, reclama, tu, premio, reunión, a, las, 3PM, actualización, del, proyecto, necesaria
+\end{itemize}
+Tamaño del vocabulario (V) = 14
+
+\section{Contar las Palabras en Cada Clase}
+Conteo de palabras en Spam:
+\begin{itemize}
+    \item gana: 1, dinero: 1, rápido: 1, reclama: 1, tu: 1, premio: 1
+\end{itemize}
+Total de palabras en spam = 6
+
+Conteo de palabras en Ham:
+\begin{itemize}
+    \item reunión: 1, a: 1, las: 1, 3PM: 1, actualización: 1, proyecto: 1, necesaria: 1
+\end{itemize}
+Total de palabras en ham = 7
+
+\section{Calcular las Priori (Priors)}
+\begin{align*}
+P(\text{Spam}) &= \frac{2}{4} = 0.5 \\
+P(\text{Ham}) &= \frac{2}{4} = 0.5
+\end{align*}
+
+\section{Calcular las Probabilidades Condicionales con Suavizado de Laplace}
+\begin{align*}
+P(\text{palabra|spam}) &= \frac{\text{Conteo en spam} + 1}{\text{Total en spam} + V} \\
+P(\text{palabra|ham}) &= \frac{\text{Conteo en ham} + 1}{\text{Total en ham} + V}
+\end{align*}
+
+Cálculos para el mensaje de prueba \textbf{Reclama tu dinero premio}:
+\begin{table}[h!]
+\centering
+\begin{tabular}{lccc}
+\toprule
+Palabra & Conteo en Spam & $P(\text{palabra|spam})$ & $P(\text{palabra|ham})$ \\
+\midrule
+reclama & 1 & $\frac{2}{20} = 0.1$ & $\frac{1}{21} \approx 0.048$ \\
+tu & 1 & $\frac{2}{20} = 0.1$ & $\frac{1}{21} \approx 0.048$ \\
+dinero & 1 & $\frac{2}{20} = 0.1$ & $\frac{1}{21} \approx 0.048$ \\
+premio & 1 & $\frac{2}{20} = 0.1$ & $\frac{1}{21} \approx 0.048$ \\
+\bottomrule
+\end{tabular}
+\caption{Probabilidades condicionales con suavizado de Laplace}
+\end{table}
+
+\section{Calcular las Probabilidades Conjuntas (Sin Logs)}
+\begin{align*}
+P(\text{Spam|Mensaje}) &= 0.5 \times (0.1)^4 = 0.5 \times 0.0001 = 0.00005 \\
+P(\text{Ham|Mensaje}) &= 0.5 \times (0.048)^4 \approx 0.5 \times 0.000005 = 0.0000024
+\end{align*}
+
+\section{Calcular las Probabilidades Conjuntas (Con Logs)}
+\begin{align*}
+\log P(\text{Spam|Mensaje}) &= \log 0.5 + 4 \times \log 0.1 = -9.905 \\
+\log P(\text{Ham|Mensaje}) &= \log 0.5 + 4 \times \log 0.048 = -12.833
+\end{align*}
+
+\section{Comparar los Resultados}
+\begin{itemize}
+    \item Spam (Log) = -9.905
+    \item Ham (Log) = -12.833
+\end{itemize}
+El número menos negativo es más alto, por lo que el modelo clasifica este mensaje como spam.
+
+\section{Conclusión}
+El modelo clasifica correctamente el mensaje como spam porque las palabras "reclama", "tu", "dinero" y "premio" son más comunes en los mensajes de spam del conjunto de entrenamiento.
+
+\end{document}
