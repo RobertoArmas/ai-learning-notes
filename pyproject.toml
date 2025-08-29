@@ -3,7 +3,7 @@ name = "ai-learning-notes"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "chardet>=5.2.0",
     "faker>=37.3.0",
@@ -13,9 +13,11 @@ dependencies = [
     "openpyxl>=3.1.5",
     "pandas>=2.2.3",
     "pycountry>=24.6.1",
+    "pydea>=1.6",
     "scikit-learn>=1.6.1",
     "seaborn>=0.13.2",
     "wbdata>=1.0.0",
+    "ydata-profiling[notebook]>=4.12.2",
 ]
 
 [tool.uv.workspace]
